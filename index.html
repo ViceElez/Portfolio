@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vice Elezović — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface2: #171717;
+            --border: #222222;
+            --text: #f0ede6;
+            --muted: #666;
+            --accent: #c8f15a;
+            --accent2: #ff6b35;
+            --accent3: #5af1c8;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* NOISE OVERLAY */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 3rem;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.4s, background 0.4s;
+        }
+
+        nav.scrolled {
+            background: rgba(10,10,10,0.92);
+            border-color: var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 3rem 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(8rem, 22vw, 22rem);
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(200,241,90,0.08);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            letter-spacing: -0.02em;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-20px); }
+        }
+
+        .hero-grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(200,241,90,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(200,241,90,0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+
+        .hero-dot {
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(200,241,90,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .hero-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.3s;
+        }
+
+        .hero-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(3.5rem, 8vw, 7.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.5s;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
+            color: var(--muted);
+            max-width: 480px;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.7s;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.9s;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent);
+            color: #0a0a0a;
+            padding: 0.9rem 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); background: #d4ff66; }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.9rem 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 2rem;
+            right: 3rem;
+            writing-mode: vertical-rl;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 1.5s;
+        }
+
+        .hero-scroll::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--muted), transparent);
+        }
+
+        /* SECTIONS */
+        section { padding: 8rem 3rem; }
+
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ABOUT */
+        #about {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .about-text p {
+            color: #999;
+            line-height: 1.85;
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p span { color: var(--text); }
+
+        .about-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 2.5rem;
+        }
+
+        .about-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-link::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 0;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .about-link:hover::before { width: 3px; }
+        .about-link:hover { border-color: var(--accent); color: var(--text); transform: translateX(4px); }
+
+        .about-link-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-link span { position: relative; z-index: 1; }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .stat {
+            background: var(--surface);
+            padding: 2rem;
+        }
+
+        .stat-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .skill-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* PROJECTS */
+        #projects { border-top: 1px solid var(--border); }
+
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 4rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .project-card {
+            background: var(--surface);
+            padding: 2.25rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent3));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover::before { transform: scaleX(1); }
+        .project-card:hover { background: var(--surface2); }
+
+        .project-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            color: rgba(200,241,90,0.06);
+            position: absolute;
+            top: -0.5rem;
+            right: 1rem;
+            line-height: 1;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .project-card:hover .project-num { color: rgba(200,241,90,0.12); }
+
+        .project-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tech-badge {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            padding: 0.25rem 0.6rem;
+            background: rgba(200,241,90,0.08);
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(200,241,90,0.15);
+        }
+
+        .project-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.45rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .project-desc {
+            font-size: 0.88rem;
+            color: #777;
+            line-height: 1.7;
+            flex: 1;
+            margin-bottom: 1.75rem;
+        }
+
+        .project-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+            margin-top: auto;
+        }
+
+        .project-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: gap 0.2s;
+        }
+
+        .project-link:hover { gap: 0.8rem; }
+
+        .project-link-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .project-type {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* MORE PROJECTS */
+        .more-projects {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 1rem 2.5rem;
+            font-size: 0.82rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .btn-more:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+
+        .footer-right {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger children */
+        .stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .stagger.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.05s; }
+        .stagger.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.1s; }
+        .stagger.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.15s; }
+        .stagger.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.2s; }
+        .stagger.visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.25s; }
+        .stagger.visible > *:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.3s; }
+        .stagger.visible > *:nth-child(7) { opacity: 1; transform: none; transition-delay: 0.35s; }
+        .stagger.visible > *:nth-child(8) { opacity: 1; transform: none; transition-delay: 0.4s; }
+        .stagger.visible > *:nth-child(9) { opacity: 1; transform: none; transition-delay: 0.45s; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .projects-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-links { display: none; }
+            section { padding: 5rem 1.5rem; }
+            .hero { padding: 0 1.5rem 4rem; }
+            #about { grid-template-columns: 1fr; gap: 3rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .projects-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+    <a href="#" class="nav-logo">VE</a>
+    <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="mailto:vice.elezovic@gmail.com">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+    <div class="hero-grid-lines"></div>
+    <div class="hero-dot"></div>
+    <div class="hero-bg-text">VICE</div>
+    <div class="hero-scroll">Scroll</div>
+
+    <p class="hero-eyebrow">Full-Stack Developer · Split, Croatia</p>
+    <h1 class="hero-title">
+        Building things<br>
+        for the <em>web.</em>
+    </h1>
+    <p class="hero-sub">
+        I'm Vice Elezović — a software developer crafting clean, functional digital experiences. From backend logic to polished UIs.
+    </p>
+    <div class="hero-cta">
+        <a href="#projects" class="btn-primary">
+            View Work
+            <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+        </a>
+        <a href="#about" class="btn-ghost">About Me</a>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="about-text reveal">
+        <p class="section-label">About</p>
+        <h2 class="section-title">A developer<br>from the coast.</h2>
+
+        <p>I'm a junior <span>software developer</span> with a solid foundation in C# backend systems and experience building frontends with modern TypeScript. My journey started with console applications and grew into full-stack development, where I discovered my genuine passion for server-side logic.</p>
+
+        <div class="about-links">
+            <a href="https://www.linkedin.com/in/vice-elezovic-0818042b6/" target="_blank" rel="noopener" class="about-link">
+                <svg class="about-link-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <span>linkedin.com/in/vice-elezovic-0818042b6</span>
+            </a>
+            <a href="https://github.com/ViceElez" target="_blank" rel="noopener" class="about-link">
+                <svg class="about-link-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                <span>github.com/ViceElez</span>
+            </a>
+            <a href="mailto:vice.elezovic@gmail.com" class="about-link">
+                <svg class="about-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                <span>vice.elezovic@gmail.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="reveal">
+        <div class="about-stats">
+            <div class="stat">
+                <div class="stat-num">20+</div>
+                <div class="stat-label">Projects Built</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">5+</div>
+                <div class="stat-label">Tech Stacks</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">2+</div>
+                <div class="stat-label">Years Coding</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">2</div>
+                <div class="stat-label">Projects Deployed</div>
+            </div>
+        </div>
+
+        <div class="skills-list">
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">Next.js</span>
+            <span class="skill-tag">C#</span>
+            <span class="skill-tag">.NET Core</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">HTML/CSS</span>
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Unity</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">Python</span>
+        </div>
+    </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+    <div class="projects-header reveal">
+        <div>
+            <p class="section-label">Work</p>
+            <h2 class="section-title">Selected<br>Projects.</h2>
+        </div>
+        <a href="https://github.com/ViceElez" target="_blank" rel="noopener" class="btn-ghost">
+            All Projects on GitHub
+            <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+        </a>
+    </div>
+
+    <div class="projects-grid stagger">
+
+        <!-- Coachlio -->
+        <div class="project-card">
+            <div class="project-num">01</div>
+            <div class="project-stack">
+                <span class="tech-badge">TypeScript</span>
+                <span class="tech-badge">Next.js</span>
+                <span class="tech-badge">React</span>
+            </div>
+            <h3 class="project-title">Coachlio</h3>
+            <p class="project-desc">A coaching platform connecting coaches with clients. Features scheduling, session management, and a polished client-facing experience. Live at coachlio.net.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/Coachlio" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Web App</span>
+            </div>
+        </div>
+
+        <!-- Drive -->
+        <div class="project-card">
+            <div class="project-num">02</div>
+            <div class="project-stack">
+                <span class="tech-badge">C#</span>
+                <span class="tech-badge">.NET</span>
+                <span class="tech-badge">SQL</span>
+            </div>
+            <h3 class="project-title">Drive</h3>
+            <p class="project-desc">A cloud storage management system built in C# and .NET. Handles file operations, folder hierarchies, user permissions, and persistent data storage.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/Internship-7-Drive" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Backend</span>
+            </div>
+        </div>
+
+        <!-- FESBhub -->
+        <div class="project-card">
+            <div class="project-num">03</div>
+            <div class="project-stack">
+                <span class="tech-badge">TypeScript</span>
+                <span class="tech-badge">React</span>
+                <span class="tech-badge">Next.js</span>
+            </div>
+            <h3 class="project-title">FESBhub</h3>
+            <p class="project-desc">A hub platform for FESB university students — aggregating resources, announcements, and tools into a single community-driven web application.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/FESBhub" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Web Platform</span>
+            </div>
+        </div>
+
+        <!-- Movie Radar -->
+        <div class="project-card">
+            <div class="project-num">04</div>
+            <div class="project-stack">
+                <span class="tech-badge">.NET Core</span>
+                <span class="tech-badge">HTML</span>
+                <span class="tech-badge">CSS</span>
+                <span class="tech-badge">JS</span>
+            </div>
+            <h3 class="project-title">Movie Radar</h3>
+            <p class="project-desc">A movie discovery and tracking application. Browse, search, and manage your watchlist with a vanilla frontend powered by a robust .NET Core backend API.</p>
+            <div class="project-footer">
+                <a href="https://github.com/Gadza03/Internship-13-MovieRadar-app" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Full-Stack</span>
+            </div>
+        </div>
+
+        <!-- NASA -->
+        <div class="project-card">
+            <div class="project-num">05</div>
+            <div class="project-stack">
+                <span class="tech-badge">TypeScript</span>
+                <span class="tech-badge">React</span>
+                <span class="tech-badge">NASA API</span>
+            </div>
+            <h3 class="project-title">NASA Explorer</h3>
+            <p class="project-desc">An interactive space exploration app consuming NASA's public APIs. Browse astronomy picture of the day, Mars rover photos, and near-earth object data.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/Internship-16-NASA" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Web App</span>
+            </div>
+        </div>
+
+        <!-- Hvar Restoran -->
+        <div class="project-card">
+            <div class="project-num">06</div>
+            <div class="project-stack">
+                <span class="tech-badge">TypeScript</span>
+                <span class="tech-badge">Next.js</span>
+                <span class="tech-badge">React</span>
+            </div>
+            <h3 class="project-title">Hvar Restoran</h3>
+            <p class="project-desc">A restaurant web presence for a venue on the island of Hvar. Features a menu, gallery, reservations flow, and a clean, Mediterranean-inspired UI.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/hvar-restoran" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Website</span>
+            </div>
+        </div>
+
+        <!-- UFC Predictor -->
+        <div class="project-card">
+            <div class="project-num">07</div>
+            <div class="project-stack">
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">Jupyter</span>
+                <span class="tech-badge">ML</span>
+            </div>
+            <h3 class="project-title">UFC Match Predictor</h3>
+            <p class="project-desc">A machine learning model that predicts UFC fight outcomes based on fighter statistics and historical data. Built with Python, pandas, and scikit-learn.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/UFC-Match-Predictor" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">ML / Data</span>
+            </div>
+        </div>
+
+        <!-- SpaceBound Rocket -->
+        <div class="project-card">
+            <div class="project-num">08</div>
+            <div class="project-stack">
+                <span class="tech-badge">Unity</span>
+                <span class="tech-badge">C#</span>
+                <span class="tech-badge">ShaderLab</span>
+            </div>
+            <h3 class="project-title">SpaceBound Rocket</h3>
+            <p class="project-desc">A Unity game where a rocket must navigate through procedurally changing obstacles across multiple levels. Custom shaders, physics, and level progression system.</p>
+            <div class="project-footer">
+                <a href="https://github.com/ViceElez/SpaceBoundRocket" target="_blank" rel="noopener" class="project-link">
+                    Source Code
+                    <svg class="project-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4-4 4M3 12h18"/></svg>
+                </a>
+                <span class="project-type">Game</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="more-projects reveal">
+        <a href="https://github.com/ViceElez" target="_blank" rel="noopener" class="btn-more">
+            <svg style="width:16px;height:16px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            See More on GitHub
+        </a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-left">Vice Elezović</div>
+    <div class="footer-right">Built with care · Split, Croatia · 2025</div>
+</footer>
+
+<script>
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Intersection Observer for reveal animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal, .stagger').forEach(el => observer.observe(el));
+
+    // Subtle parallax on hero bg text
+    const bgText = document.querySelector('.hero-bg-text');
+    window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+        if (bgText) bgText.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    });
+</script>
+
+</body>
+</html>
